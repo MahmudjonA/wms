@@ -1,0 +1,29 @@
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# виртуальное окружение
+venv/
+env/
+ENV/
+.venv/
+
+# база данных
+*.sqlite3
+
+# статика и медиа (если генерируется)
+staticfiles/
+media/
+
+# файлы IDE
+.vscode/
+.idea/
+*.iml
+
+# файлы системы
+.DS_Store
+Thumbs.db
+
+# логи
+*.log
