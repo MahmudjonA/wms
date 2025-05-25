@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}Warehouses - WMS{% endblock %}
+{% block page_title %}Warehouse List{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <!-- Add Warehouse Button -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addWarehouseModal">
+            + Add Warehouse
+        </button>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>Manager</th>
+            <th>Address</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for wh in warehouses %}
+        <tr>
+            <td>{{ wh.name }}</td>
+            <td>{{ wh.code }}</td>
+            <td>{{ wh.manager }}</td>
+            <td>{{ wh.address|linebreaksbr }}</td>
+            <td>
+                <!-- Edit link -->
+                <a href="{% url 'warehouse_update' wh.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <!-- Delete modal trigger -->
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        data-toggle="modal"
+                        data-target="#deleteWarehouseModal{{ wh.pk }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        <!-- ===== Delete Modal ===== -->
+        <div class="modal fade" id="deleteWarehouseModal{{ wh.pk }}" tabindex="-1" role="dialog"
+             aria-labelledby="deleteWarehouseLabel{{ wh.pk }}">
+            <div class="modal-dialog" role="document">
+                <form method="post" action="{% url 'warehouse_delete' wh.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteWarehouseLabel{{ wh.pk }}">Confirm Delete</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Rostdan ham “<strong>{{ wh.name }}</strong>” omborini o‘chirmoqchimisiz?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ===== End Delete Modal ===== -->
+
+    {% empty %}
+        <tr><td colspan="5">No warehouses defined.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- ===== Add Warehouse Modal (for reference) ===== -->
+<div class="modal fade" id="addWarehouseModal" tabindex="-1" role="dialog" aria-labelledby="addWarehouseLabel">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'warehouse_list' %}">
+            {% csrf_token %}
+            <input type="hidden" name="create" value="1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addWarehouseLabel">Add Warehouse</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- ===== End Add Modal ===== -->
+{% endblock %}
+

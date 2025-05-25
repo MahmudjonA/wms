@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Employees - WMS{% endblock %}
+{% block page_title %}Employee List{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <!-- Add Employee Button -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addEmployeeModal">
+            + Add Employee
+        </button>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for emp in employees %}
+        <tr>
+            <td>{{ emp.full_name }}</td>
+            <td>{{ emp.get_role_display }}</td>
+            <td>
+                <!-- Edit link -->
+                <a href="{% url 'employee_update' emp.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <!-- Delete modal trigger -->
+                <button type="button"
+                        class="btn btn-danger btn-sm"
+                        data-toggle="modal"
+                        data-target="#deleteEmployeeModal{{ emp.pk }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        <!-- ===== Delete Modal for this Employee ===== -->
+        <div class="modal fade" id="deleteEmployeeModal{{ emp.pk }}" tabindex="-1" role="dialog"
+             aria-labelledby="deleteEmployeeLabel{{ emp.pk }}">
+            <div class="modal-dialog" role="document">
+                <form method="post" action="{% url 'employee_delete' emp.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteEmployeeLabel{{ emp.pk }}">Confirm Delete</h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Rostdan ham “<strong>{{ emp.full_name }}</strong>” xodimini o‘chirmoqchimisiz?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- ===== End Delete Modal ===== -->
+
+    {% empty %}
+        <tr><td colspan="3">No employees defined.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- ===== Add Employee Modal ===== -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="addEmployeeLabel">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'employee_list' %}">
+            {% csrf_token %}
+            <input type="hidden" name="create" value="1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEmployeeLabel">Add Employee</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- ===== End Add Modal ===== -->
+
+{% endblock %}

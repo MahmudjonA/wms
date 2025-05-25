@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Suppliers{% endblock %}
+{% block page_title %}Supplier List{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card-box table-responsive">
+            <h4 class="m-t-0 header-title">Supplier List</h4>
+
+            <!-- Add button -->
+            <button type="button" class="btn btn-success m-b-20" data-toggle="modal" data-target="#addSupplierModal">
+                + Add Supplier
+            </button>
+
+            <!-- Table -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                        <tr>
+                            <td>{{ supplier.name }}</td>
+                            <td>{{ supplier.contact_email }}</td>
+                            <td>{{ supplier.phone }}</td>
+                            <td>
+                                <!-- Edit button -->
+                                <a href="{% url 'supplier_update' supplier.pk %}" class="btn btn-primary btn-sm">Edit</a>
+
+                                <!-- Delete button -->
+                                <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteSupplierModal{{ supplier.id }}">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+
+
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteSupplierModal{{ supplier.id }}" tabindex="-1" role="dialog">
+                            <div class="modal-dialog" role="document">
+                                <form method="post" action="{% url 'supplier_delete' supplier.id %}">
+                                    {% csrf_token %}
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Delete Supplier</h4>
+                                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Rostdan ham "{{ supplier.name }}" yetkazib beruvchini o'chirmoqchimisiz?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'supplier_create' %}">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Supplier</h4>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

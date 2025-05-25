@@ -1,0 +1,23 @@
+{# templates/location_form.html #}
+{% extends 'base.html' %}
+{% block title %}{{ form.instance.pk|yesno:"Edit Location,Add Location" }} - WMS{% endblock %}
+{% block page_title %}{{ form.instance.pk|yesno:"Edit Location,Add Location" }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card-box">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">
+                        {% if form.instance.pk %}Save Changes{% else %}Create Location{% endif %}
+                    </button>
+                    <a href="{% url 'location_list' %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

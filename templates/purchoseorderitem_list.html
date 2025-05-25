@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block title %}PO Items - WMS{% endblock %}
+{% block page_title %}Purchase Order Items{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <!-- Add Item Button -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addItemModal">
+            + Add Item
+        </button>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>PO Reference</th>
+            <th>Product SKU</th>
+            <th>Qty Ordered</th>
+            <th>Qty Received</th>
+            <th>Unit Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+        <tr>
+            <td>{{ item.purchase_order.reference }}</td>
+            <td>{{ item.product.sku }}</td>
+            <td>{{ item.quantity_ordered }}</td>
+            <td>{{ item.quantity_received }}</td>
+            <td>{{ item.unit_price }}</td>
+            <td>
+                <!-- Edit link -->
+                <a href="{% url 'purchaseorderitem_update' item.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <!-- Delete modal trigger -->
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-toggle="modal"
+                        data-target="#deleteItemModal{{ item.pk }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteItemModal{{ item.pk }}" tabindex="-1" role="dialog"
+             aria-labelledby="deleteItemLabel{{ item.pk }}">
+            <div class="modal-dialog" role="document">
+                <form method="post" action="{% url 'purchaseorderitem_delete' item.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteItemLabel{{ item.pk }}">Confirm Delete</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            Rostdan ham PO “<strong>{{ item.purchase_order.reference }}</strong> uchun
+                            “<strong>{{ item.product.sku }}</strong>” mahsulotini o‘chirmoqchimisiz?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Delete Modal -->
+
+    {% empty %}
+        <tr><td colspan="6">No items found.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- Add Item Modal -->
+<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemLabel">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'purchaseorderitem_list' %}">
+            {% csrf_token %}
+            <input type="hidden" name="create" value="1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addItemLabel">Add Purchase Order Item</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- End Add Modal -->
+
+{% endblock %}

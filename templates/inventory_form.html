@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Add/Edit Inventory{% endblock %}
+{% block page_title %}Inventory Form{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card-box">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{% url 'inventory_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

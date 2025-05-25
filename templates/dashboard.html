@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard - WMS{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+    <style>
+        /* Card styling */
+        .card-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .card-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .header-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #1a202c;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .text-primary { color: #319795 !important; } /* Teal */
+        .text-success { color: #ed64a6 !important; } /* Coral */
+        .text-info { color: #4c51bf !important; } /* Indigo */
+        .text-warning { color: #d69e2e !important; } /* Amber */
+        h2.mb-0 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.25rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        /* Chart containers */
+        #sparkline-orders {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        [data-plugin="circliful"] {
+            margin: 20px auto;
+            padding: 10px;
+        }
+        [data-plugin="peity-pie"], [data-plugin="peity-donut"] {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-box {
+                padding: 16px;
+            }
+            h2.mb-0 {
+                font-size: 1.75rem;
+            }
+            [data-plugin="peity-pie"], [data-plugin="peity-donut"] {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card-box">
+            <h4 class="header-title">Suppliers</h4>
+            <h2 class="text-primary mb-0">{{ total_suppliers }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-box">
+            <h4 class="header-title">Products</h4>
+            <h2 class="text-success mb-0">{{ total_products }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-box">
+            <h4 class="header-title">Inventory Items</h4>
+            <h2 class="text-info mb-0">{{ total_inventory_items }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card-box">
+            <h4 class="header-title">Purchase Orders</h4>
+            <h2 class="text-warning mb-0">{{ total_orders }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card-box">
+            <h4 class="header-title">Orders Last 7 Days</h4>
+            <div id="sparkline-orders"></div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card-box text-center">
+            <h4 class="header-title">Received vs Ordered</h4>
+            <div data-plugin="circliful"
+                 data-dimension="200"
+                 data-text="{{ percent_received }}%"
+                 data-info="Received"
+                 data-width="25"
+                 data-percent="{{ percent_received }}"
+                 data-fgcolor="#319795"
+                 data-bgcolor="#edf2f7"
+                 data-fontsize="24"
+                 data-fontweight="600">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card-box">
+            <h4 class="header-title">Mahsulotlar taqsimoti (Pie)</h4>
+            <span data-plugin="peity-pie"
+                  data-colors="#319795,#4a5568,#ed64a6,#2b6cb0,#d69e2e,#c53030"
+                  data-width="140"
+                  data-height="140">
+                  {{ pie_data }}
+            </span>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card-box">
+            <h4 class="header-title">Zaxira holati (Donut)</h4>
+            <span data-plugin="peity-donut"
+                  data-colors="#319795,#d69e2e"
+                  data-width="140"
+                  data-height="140">{{ donut_data }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peity@3.3.0/jquery.peity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-sparkline@2.4.0/jquery.sparkline.min.js"></script>
+
+<script src="{% static 'plugins/jquery-circliful/js/jquery.circliful.min.js' %}"></script>
+<script src="{% static 'js/jquery.core.js' %}"></script>
+<script src="{% static 'js/jquery.app.js' %}"></script>
+
+<script>var resizefunc = [];</script>
+
+<script>
+    $(document).ready(function () {
+        $('[data-plugin="peity-pie"]').peity("pie", {
+            width: 140,
+            height: 140,
+            fill: ["#319795", "#4a5568", "#ed64a6", "#2b6cb0", "#d69e2e", "#c53030"]
+        });
+        $('[data-plugin="peity-donut"]').peity("donut", {
+            width: 140,
+            height: 140,
+            fill: ["#319795", "#d69e2e"]
+        });
+
+        $("#sparkline-orders").sparkline(
+            {{ sparkline_orders|safe }},
+            {
+                type: 'line',
+                width: '100%',
+                height: '220',
+                lineColor: '#319795',
+                fillColor: 'rgba(49, 151, 149, 0.1)',
+                lineWidth: 2.5,
+                spotColor: '#ed64a6',
+                minSpotColor: '#ed64a6',
+                maxSpotColor: '#ed64a6',
+                chartRangeMin: 0
+            }
+        );
+
+        if (typeof Components !== "undefined" && Components.init) {
+            Components.init();
+        }
+    });
+</script>
+{% endblock %}

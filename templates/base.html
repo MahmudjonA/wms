@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}WMS System{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="WMS Dashboard" name="description" />
+    <meta content="Your Company" name="author" />
+    <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+
+    <!-- CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/core.css' %}" rel="stylesheet">
+    <link href="{% static 'css/components.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/pages.css' %}" rel="stylesheet">
+    <link href="{% static 'css/menu.css' %}" rel="stylesheet">
+    <link href="{% static 'css/responsive.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/jquery-circliful/css/jquery.circliful.css' %}" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        /* Topbar */
+        .topbar {
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+            padding: 12px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+        .topbar-left {
+            background-color: #ffffff; /* Changed to white */
+            padding: 8px 24px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+        }
+        .topbar-left a.logo {
+            color: #1e3a8a; /* Dark navy for contrast */
+            font-size: 1.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .topbar-left a span {
+            color: #3b82f6; /* Teal for contrast */
+            font-weight: 400;
+        }
+        .topbar-left i {
+            color: #1e3a8a; /* Dark navy for contrast */
+            margin-left: 12px;
+            font-size: 1.5rem;
+        }
+        .navbar-default {
+            background: transparent;
+            border: none;
+            margin: 0;
+        }
+        .page-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            padding: 10px 0;
+        }
+        .button-menu-mobile {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.75rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .button-menu-mobile:hover {
+            color: #bfdbfe;
+        }
+        /* Sidebar */
+        .side-menu {
+            background-color: #0f172a;
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+            padding-top: 70px;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-inner {
+            padding: 24px 0;
+        }
+        .text-muted.menu-title {
+            color: #94a3b8 !important;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 12px 24px;
+            margin-bottom: 8px;
+        }
+        #sidebar-menu ul li a {
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        #sidebar-menu ul li a i {
+            margin-right: 12px;
+            color: #38bdf8;
+            font-size: 1.2rem;
+        }
+        #sidebar-menu ul li a:hover {
+            background-color: #1e293b;
+            color: #ffffff;
+        }
+        #sidebar-menu ul li.active a {
+            background-color: #1e293b;
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        .waves-effect {
+            position: relative;
+            overflow: hidden;
+        }
+        .waves-effect::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .waves-effect:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        /* Content */
+        .content-page {
+            margin-left: 260px;
+            padding: 80px 24px 24px;
+            min-height: 100vh;
+        }
+        .content .container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        /* Footer */
+        .footer {
+            background: #ffffff;
+            color: #475569;
+            padding: 16px 24px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: right;
+            border-top: 1px solid #e2e8f0;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .side-menu {
+                width: 100%;
+                transform: translateX(-100%);
+                z-index: 2000;
+            }
+            .side-menu.active {
+                transform: translateX(0);
+            }
+            .content-page {
+                margin-left: 0;
+                padding-top: 70px;
+            }
+            .button-menu-mobile {
+                display: block;
+            }
+            .topbar-left {
+                border-radius: 0;
+            }
+            .topbar-left a.logo {
+                font-size: 1.5rem;
+            }
+            .page-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="fixed-left">
+<div id="wrapper">
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="{% url 'dashboard' %}" class="logo">
+                <span>WMS<span>Sys</span></span>
+                <i class="zmdi zmdi-layers"></i>
+            </a>
+        </div>
+        <div class="navbar navbar-default">
+            <div class="container">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <button class="button-menu-mobile open-left">
+                            <i class="zmdi zmdi-menu"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <h4 class="page-title">{% block page_title %}Dashboard{% endblock %}</h4>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Sidebar -->
+    <div class="left side-menu">
+        <div class="sidebar-inner slimscrollleft">
+            <div id="sidebar-menu">
+                <ul>
+                    <li class="text-muted menu-title">Navigation</li>
+                    <li>
+                        <a href="{% url 'dashboard' %}" class="waves-effect">
+                            <i class="zmdi zmdi-view-dashboard"></i>
+                            <span> Dashboard </span>
+                        </a>
+                    </li>
+                    <li><a href="{% url 'supplier_list' %}" class="waves-effect"><i class="zmdi zmdi-truck"></i> <span> Supplier </span></a></li>
+                    <li><a href="{% url 'inventory_list' %}" class="waves-effect"><i class="zmdi zmdi-store"></i> <span> Inventory </span></a></li>
+                    <li><a href="{% url 'product_list' %}" class="waves-effect"><i class="zmdi zmdi-shopping-basket"></i> <span> Product </span></a></li>
+                    <li><a href="{% url 'location_list' %}" class="waves-effect"><i class="zmdi zmdi-pin-drop"></i> <span> Location </span></a></li>
+                    <li><a href="{% url 'warehouse_list' %}" class="waves-effect"><i class="zmdi zmdi-archive"></i> <span> Warehouse </span></a></li>
+                    <li><a href="{% url 'purchaseorder_list' %}" class="waves-effect"><i class="zmdi zmdi-assignment"></i> <span> Orders </span></a></li>
+                    <li><a href="{% url 'order_item_list' %}" class="waves-effect"><i class="zmdi zmdi-format-list-bulleted"></i> <span> Order Items </span></a></li>
+                    <li><a href="{% url 'employee_list' %}" class="waves-effect"><i class="zmdi zmdi-accounts"></i> <span> Employees </span></a></li>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-page">
+        <div class="content">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        <footer class="footer text-right">
+            {{ now|date:"Y" }} © WMS System.
+        </footer>
+    </div>
+</div>
+
+<!-- JS -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/detect.js' %}"></script>
+<script src="{% static 'js/fastclick.js' %}"></script>
+<script src="{% static 'js/jquery.slimscroll.js' %}"></script>
+<script src="{% static 'js/jquery.blockUI.js' %}"></script>
+<script src="{% static 'js/waves.js' %}"></script>
+<script src="{% static 'js/jquery.nicescroll.js' %}"></script>
+<script src="{% static 'js/jquery.scrollTo.min.js' %}"></script>
+<script src="{% static 'js/jquery.core.js' %}"></script>
+<script src="{% static 'js/jquery.app.js' %}"></script>
+<script src="{% static 'plugins/peity/jquery.peity.min.js' %}"></script>
+<script src="{% static 'plugins/jquery-sparkline/jquery.sparkline.min.js' %}"></script>
+<script src="{% static 'plugins/jquery-circliful/js/jquery.circliful.min.js' %}"></script>
+<script src="{% static 'pages/jquery.other-charts.js' %}"></script>
+
+<script>
+    // Toggle sidebar on mobile
+    $(document).ready(function () {
+        $('.button-menu-mobile').click(function () {
+            $('.side-menu').toggleClass('active');
+        });
+        // Highlight active sidebar link
+        const currentPath = window.location.pathname;
+        $('#sidebar-menu ul li a').each(function () {
+            if ($(this).attr('href') === currentPath) {
+                $(this).parent().addClass('active');
+            }
+        });
+    });
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

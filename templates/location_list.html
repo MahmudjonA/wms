@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Locations - WMS{% endblock %}
+{% block page_title %}Location List{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <!-- Add Location Tugmasi -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addLocationModal">
+            + Add Location
+        </button>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Warehouse</th>
+            <th>Zone</th>
+            <th>Aisle</th>
+            <th>Rack</th>
+            <th>Bin</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for loc in locations %}
+        <tr>
+            <td>{{ loc.warehouse.code }}</td>
+            <td>{{ loc.zone }}</td>
+            <td>{{ loc.aisle }}</td>
+            <td>{{ loc.rack }}</td>
+            <td>{{ loc.bin }}</td>
+            <td>
+                <a href="{% url 'location_update' loc.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteLocationModal{{ loc.pk }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteLocationModal{{ loc.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteLocationLabel{{ loc.pk }}">
+            <div class="modal-dialog" role="document">
+                <form method="post" action="{% url 'location_delete' loc.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteLocationLabel{{ loc.pk }}">Confirm Deletion</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            Rostdan ham “<strong>{{ loc }}</strong>” location’ni o‘chirmoqchimisiz?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    {% empty %}
+        <tr><td colspan="6">No locations defined.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- Add Location Modal -->
+<div class="modal fade" id="addLocationModal" tabindex="-1" role="dialog" aria-labelledby="addLocationLabel">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'location_list' %}">
+            {% csrf_token %}
+            <input type="hidden" name="create" value="1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addLocationLabel">Add Location</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Purchase Orders - WMS{% endblock %}
+{% block page_title %}Purchase Order List{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <!-- Add PO Button -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addPOModal">
+            + Add Purchase Order
+        </button>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Reference</th>
+            <th>Supplier</th>
+            <th>Order Date</th>
+            <th>Expected Date</th>
+            <th>Created By</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for po in orders %}
+        <tr>
+            <td>{{ po.reference }}</td>
+            <td>{{ po.supplier }}</td>
+            <td>{{ po.order_date }}</td>
+            <td>{{ po.expected_date }}</td>
+            <td>{{ po.created_by }}</td>
+            <td>
+                <!-- Edit link -->
+                <a href="{% url 'purchaseorder_update' po.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                <!-- Delete trigger -->
+                <button type="button" class="btn btn-danger btn-sm"
+                        data-toggle="modal"
+                        data-target="#deletePOModal{{ po.pk }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deletePOModal{{ po.pk }}" tabindex="-1" role="dialog"
+             aria-labelledby="deletePOLabel{{ po.pk }}">
+            <div class="modal-dialog" role="document">
+                <form method="post" action="{% url 'purchaseorder_delete' po.pk %}">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deletePOLabel{{ po.pk }}">Confirm Delete</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            Rostdan ham “<strong>{{ po.reference }}</strong>” raqamli PO’ni o‘chirmoqchimisiz?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- End Delete Modal -->
+
+    {% empty %}
+        <tr><td colspan="6">No purchase orders found.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- Add PO Modal -->
+<div class="modal fade" id="addPOModal" tabindex="-1" role="dialog" aria-labelledby="addPOLabel">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'purchaseorder_list' %}">
+            {% csrf_token %}
+            <input type="hidden" name="create" value="1">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPOLabel">Add Purchase Order</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- End Add PO Modal -->
+
+{% endblock %}

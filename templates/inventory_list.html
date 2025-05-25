@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Inventory - WMS{% endblock %}
+{% block page_title %}Inventory Records{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <!-- Add Inventory Tugmasi -->
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addInventoryModal">
+            + Add Inventory
+        </button>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Location</th>
+            <th>Quantity</th>
+            <th>Last Updated</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for inv in inventory_list %}
+        <tr>
+            <td>{{ inv.product }}</td>
+            <td>{{ inv.location }}</td>
+            <td>{{ inv.quantity }}</td>
+            <td>{{ inv.last_updated }}</td>
+            <td>
+                <a href="{% url 'inventory_update' inv.id %}" class="btn btn-primary btn-sm">Edit</a>
+                <!-- Delete trigger -->
+                <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteInventoryModal{{ inv.pk }}">
+                    Delete
+                </button>
+            </td>
+        </tr>
+
+        <!-- Delete Modal -->
+        <div class="modal fade" id="deleteInventoryModal{{ inv.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteInventoryLabel{{ inv.pk }}">
+            <div class="modal-dialog" role="document">
+                <form method="post" action="{% url 'inventory_delete' inv.id %}">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteInventoryLabel{{ inv.pk }}">Confirm Deletion</h5>
+                            <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            Rostdan ham “<strong>{{ inv.product }}</strong>” ning inventory rekordini o‘chirmoqchimisiz?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% empty %}
+        <tr><td colspan="5">No inventory records.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- Add Inventory Modal -->
+<div class="modal fade" id="addInventoryModal" tabindex="-1" role="dialog" aria-labelledby="addInventoryLabel">
+    <div class="modal-dialog" role="document">
+        <form method="post" action="{% url 'inventory_list' %}">
+            {% csrf_token %}
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addInventoryLabel">Add Inventory Record</h5>
+                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    {{ create_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
